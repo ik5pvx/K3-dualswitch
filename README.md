@@ -16,5 +16,5 @@ antenna automatically from the K3 band lines on the accessory port,
 while allowing automatic or manual selection of a secondary antenna
 for the second antenna input. 
 
-
+The schematic and the software are released to PUBLIC DOMAIN.
 
