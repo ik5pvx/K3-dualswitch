@@ -62,6 +62,7 @@
 // should I decide to put an lcd on this thing
 // give a name to each antenna port. keep it short.
 char* antennaname[] = {
+	"***NONE***",// ant 0 doesn't exist, switch counts from 1
 	"Yagi 6m",   // ant 1
 	"Vert 6m",   // ant 2
 	"",          // ant 3
@@ -74,11 +75,12 @@ char* antennaname[] = {
 
 // for each possible band, 2 means it is the preferred antenna, 
 // 1 means the antenna can be used, 0 means antenna not usable.
+// NOTE: 60 m is band 0. 
 uint8_t bandtoant[11][8] = {
 	// ant1, ant2, ant3, ant4, ant5, ant6, ant7, ant8
+	{ 0, 0, 0, 0, 0, 0, 0, 0 }, //  60 m
 	{ 0, 0, 0, 0, 0, 0, 0, 0 }, // 160 m
 	{ 0, 0, 0, 0, 0, 0, 2, 0 }, //  80 m
-	{ 0, 0, 0, 0, 0, 0, 0, 0 }, //  60 m
 	{ 0, 0, 0, 0, 0, 0, 1, 2 }, //  40 m
 	{ 0, 0, 0, 0, 0, 0, 2, 0 }, //  30 m
 	{ 0, 0, 0, 0, 0, 0, 1, 2 }, //  20 m
@@ -138,8 +140,14 @@ void loop() {
 				}
 			}
 			Serial.println(band);
-			Serial.println(oneofeight(band));
-			sendbits(band,oneofeight(band));
+			Serial.print("Pref. ant: ");
+			Serial.println(preferredant(band));
+			Serial.print("One of Eight code: ");
+			Serial.println(oneofeight(preferredant(band)));
+			Serial.print("Resulting antenna: ");
+			Serial.println(antennaname[(preferredant(band))]);
+			sendbits(band,oneofeight(preferredant(band)));
+			
 		} else { 
 			Serial.println("Not a hex digit");
 		}
@@ -166,4 +174,13 @@ int oneofeight (int number) {
 	} else {
 		return 0;
 	}
+}
+
+int preferredant(int band) {
+	for (int i=0;i<8;i++) {
+		if ( bandtoant[band][i] == 2) {
+			return i+1;
+		}
+	}
+	return 0;
 }
