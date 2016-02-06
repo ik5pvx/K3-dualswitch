@@ -73,7 +73,7 @@ char* antennaname[] = {
 };
 
 // for each possible band, 1 means the antenna can be tuned to it, 0 it can't	
-int bandtoant[11][8] = {
+uint8_t bandtoant[11][8] = {
 	// ant1, ant2, ant3, ant4, ant5, ant6, ant7, ant8
 	{ 0, 0, 0, 0, 0, 0, 0, 0 }, // 160 m
 	{ 0, 0, 0, 0, 0, 0, 1, 0 }, //  80 m
