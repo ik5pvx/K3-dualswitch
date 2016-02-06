@@ -52,11 +52,6 @@
 
 */
 
-/* CAMELCASE SUCKS */
-
-//#include <stdlib.h>
-
-
 /************** USER CONFIGURABLE PART ***********/  
 
 // should I decide to put an lcd on this thing
@@ -71,6 +66,20 @@ char* antennaname[] = {
 	"",          // ant 6
 	"autotuner", // ant 7
 	"dipolo"     // ant 8
+};
+
+char* hfbandname[] = {
+	" 60 m",
+	"160 m",
+    " 80 m",
+	" 40 m",
+	" 30 m",
+	" 20 m",
+	" 17 m",
+	" 15 m",
+	" 12 m",
+	" 10 m",
+	"  6 m",
 };
 
 // for each possible band, 2 means it is the preferred antenna, 
@@ -139,14 +148,28 @@ void loop() {
 					band -= 32;
 				}
 			}
-			Serial.println(band);
+			if (band > 10) {
+				Serial.println("UNDEFINED BAND!");
+				band = 0;
+			}
+				
+			Serial.print(band);
+			Serial.print(" -> ");
+			Serial.println(hfbandname[band]);
 			Serial.print("Pref. ant: ");
-			Serial.println(preferredant(band));
+			Serial.println(preferredant(band,2));
 			Serial.print("One of Eight code: ");
-			Serial.println(oneofeight(preferredant(band)));
+			Serial.println(oneofeight(preferredant(band,2)));
 			Serial.print("Resulting antenna: ");
-			Serial.println(antennaname[(preferredant(band))]);
-			sendbits(band,oneofeight(preferredant(band)));
+			Serial.println(antennaname[(preferredant(band,2))]);
+			Serial.print("Alt. ant: ");
+			Serial.println(preferredant(band,1));
+			Serial.print("One of Eight code: ");
+			Serial.println(oneofeight(preferredant(band,1)));
+			Serial.print("Resulting antenna: ");
+			Serial.println(antennaname[(preferredant(band,1))]);
+			sendbits(oneofeight(preferredant(band,2)),
+					 oneofeight(preferredant(band,1)));
 			
 		} else { 
 			Serial.println("Not a hex digit");
@@ -176,11 +199,12 @@ int oneofeight (int number) {
 	}
 }
 
-int preferredant(int band) {
+int preferredant(int band, int preference) {
 	for (int i=0;i<8;i++) {
-		if ( bandtoant[band][i] == 2) {
+		if ( bandtoant[band][i] == preference) {
 			return i+1;
 		}
 	}
 	return 0;
 }
+
