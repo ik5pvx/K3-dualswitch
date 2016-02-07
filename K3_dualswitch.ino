@@ -148,59 +148,65 @@ void setup() {
 	// start a serial monitor to help debugging
 #ifdef DEBUG
 	Serial.begin(9600);
-	Serial.println("Type a hex digit");
+	Serial.println("Initialization complete");
 #endif
 }
 
 void loop() {
-	// Let's read a character from the serial and pretend it's our band data.
-	if (Serial.available() > 0) {
-		int band = Serial.read();
-		if (isHexadecimalDigit(band)) {
+//	// Let's read a character from the serial and pretend it's our band data.
+//	if (Serial.available() > 0) {
+//		int band = Serial.read();
+//		if (isHexadecimalDigit(band)) {
+	int band = readband();
 #ifdef DEBUG
-			Serial.print("Selecting antenna for band ");
+	Serial.print("Selecting antenna for band ");
 #endif
-			// conversion from ascii hex digit to number, taking care of case
-			band -= '0'; 
-			if (band > 9 ) { 
-				band -= 7;
-				if (band > 16) {
-					band -= 32;
-				}
-			}
-			if (band > 10) { // there are currently only 11 HF bands on the K3
+//			// conversion from ascii hex digit to number, taking care of case
+//			band -= '0'; 
+//			if (band > 9 ) { 
+//				band -= 7;
+//				if (band > 16) {
+//					band -= 32;
+//				}
+//			}
+	if (band > 10) { // there are currently only 11 HF bands on the K3
 #ifdef DEBUG
-				Serial.println("UNDEFINED BAND!");
+		Serial.println("UNDEFINED BAND!");
 #endif
-				band = 0;
-			}
+		band = 0;
+	}
 				
 #ifdef DEBUG
-			Serial.print(band);
-			Serial.print(" -> ");
-			Serial.println(hfbandname[band]);
-			Serial.print("Pref. ant: ");
-			Serial.println(preferredant(band,2));
-			Serial.print("One of Eight code: ");
-			Serial.println(oneofeight(preferredant(band,2)));
-			Serial.print("Resulting antenna: ");
-			Serial.println(antennaname[(preferredant(band,2))]);
-			Serial.print("Alt. ant: ");
-			Serial.println(preferredant(band,1));
-			Serial.print("One of Eight code: ");
-			Serial.println(oneofeight(preferredant(band,1)));
-			Serial.print("Resulting antenna: ");
-			Serial.println(antennaname[(preferredant(band,1))]);
+	Serial.print(band);
+	Serial.print(" -> ");
+	Serial.println(hfbandname[band]);
+	Serial.print("Pref. ant: ");
+	Serial.println(preferredant(band,2));
+	Serial.print("One of Eight code: ");
+	Serial.println(oneofeight(preferredant(band,2)));
+	Serial.print("Resulting antenna: ");
+	Serial.println(antennaname[(preferredant(band,2))]);
+	Serial.print("Alt. ant: ");
+	Serial.println(preferredant(band,1));
+	Serial.print("One of Eight code: ");
+	Serial.println(oneofeight(preferredant(band,1)));
+	Serial.print("Resulting antenna: ");
+	Serial.println(antennaname[(preferredant(band,1))]);
 #endif
-			sendbits(oneofeight(preferredant(band,2)),
-					 oneofeight(preferredant(band,1)));
+	sendbits(oneofeight(preferredant(band,2)),
+			 oneofeight(preferredant(band,1)));
 			
-		} else { 
+//} else { 
+//#ifdef DEBUG
+//			Serial.println("Not a hex digit");
+//#endif
+//		}
+//	}
+
 #ifdef DEBUG
-			Serial.println("Not a hex digit");
+	delay(1000);
 #endif
-		}
-	}
+
 }
 
 // Write the data to the shift registers
