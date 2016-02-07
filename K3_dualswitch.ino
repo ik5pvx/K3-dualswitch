@@ -114,9 +114,9 @@ uint8_t bandtoant[11][8] = {
 /* Hardware setup */
 
 // First 74HC595 (Master) 
-int latchpin = 10; //ST_CP
-int clockpin = 12; // SH_CP
-int datapin = 11; // DS
+const int latchpin = 10; //ST_CP
+const int clockpin = 12; // SH_CP
+const int datapin = 11; // DS
 
 /* 
    Second 74HC595 has ST_CP and SH_CP wired in parallel to the first,
@@ -125,12 +125,22 @@ int datapin = 11; // DS
    corresponds to the slave.
 */
 
+// The band lines from the accessory port
+const int band0pin = 2;
+const int band1pin = 3;
+const int band2pin = 4;
+const int band3pin = 5;
+
 
 void setup() {
 	// configure pins, zero all the registers so all relays are open.
 	pinMode(latchpin, OUTPUT);
 	pinMode(clockpin, OUTPUT);
 	pinMode(datapin, OUTPUT);
+	pinMode(band0pin, INPUT);
+	pinMode(band1pin, INPUT);
+	pinMode(band2pin, INPUT);
+	pinMode(band3pin, INPUT);
 	digitalWrite(latchpin, LOW);
 	shiftOut(datapin, clockpin, MSBFIRST, 0);  
 	shiftOut(datapin, clockpin, MSBFIRST, 0);  
@@ -222,5 +232,18 @@ int preferredant(int band, int preference) {
 		}
 	}
 	return 0;
+}
+
+int readband() {
+	int band0;
+	int band1;
+	int band2;
+	int band3;
+	band0 = digitalRead(band0pin);
+	band1 = digitalRead(band1pin);
+	band2 = digitalRead(band2pin);
+	band3 = digitalRead(band3pin);
+	
+	return (band3 << 3) + (band2 << 2) + (band1 << 1) + band0;
 }
 
