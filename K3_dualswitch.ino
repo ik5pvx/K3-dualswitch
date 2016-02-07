@@ -54,6 +54,12 @@
 
 /************** USER CONFIGURABLE PART ***********/  
 
+#define DEBUG
+
+#ifdef DEBUG
+// consider defining serial.print macros here
+#endif
+
 // should I decide to put an lcd on this thing
 // give a name to each antenna port. keep it short.
 char* antennaname[] = {
@@ -130,8 +136,10 @@ void setup() {
 	shiftOut(datapin, clockpin, MSBFIRST, 0);  
 	digitalWrite(latchpin, HIGH);
 	// start a serial monitor to help debugging
+#ifdef DEBUG
 	Serial.begin(9600);
 	Serial.println("Type a hex digit");
+#endif
 }
 
 void loop() {
@@ -139,7 +147,9 @@ void loop() {
 	if (Serial.available() > 0) {
 		int band = Serial.read();
 		if (isHexadecimalDigit(band)) {
+#ifdef DEBUG
 			Serial.print("Selecting antenna for band ");
+#endif
 			// conversion from ascii hex digit to number, taking care of case
 			band -= '0'; 
 			if (band > 9 ) { 
@@ -148,11 +158,14 @@ void loop() {
 					band -= 32;
 				}
 			}
-			if (band > 10) {
+			if (band > 10) { // there are currently only 11 HF bands on the K3
+#ifdef DEBUG
 				Serial.println("UNDEFINED BAND!");
+#endif
 				band = 0;
 			}
 				
+#ifdef DEBUG
 			Serial.print(band);
 			Serial.print(" -> ");
 			Serial.println(hfbandname[band]);
@@ -168,11 +181,14 @@ void loop() {
 			Serial.println(oneofeight(preferredant(band,1)));
 			Serial.print("Resulting antenna: ");
 			Serial.println(antennaname[(preferredant(band,1))]);
+#endif
 			sendbits(oneofeight(preferredant(band,2)),
 					 oneofeight(preferredant(band,1)));
 			
 		} else { 
+#ifdef DEBUG
 			Serial.println("Not a hex digit");
+#endif
 		}
 	}
 }
