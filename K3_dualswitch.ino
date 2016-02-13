@@ -242,6 +242,8 @@ int oneofeight (int number) {
 	}
 }
 
+// Find the first occurrence of the specified preference in the 
+// preferred antenna table
 int preferredant(int band, int preference) {
 	for (int i=0;i<8;i++) {
 		if ( bandtoant[band][i] == preference) {
@@ -251,6 +253,7 @@ int preferredant(int band, int preference) {
 	return 0;
 }
 
+// Read the band lines and merge them in a binary digit.
 int readband() {
 	int band0;
 	int band1;
