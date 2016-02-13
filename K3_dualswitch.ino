@@ -204,8 +204,10 @@ void loop() {
 	Serial.print("Resulting slave antenna: ");
 	Serial.println(antennaname[(preferredant(band,1))]);
 #endif
-	sendbits(oneofeight(preferredant(band,2)),
-			 oneofeight(preferredant(band,1)));
+	// Since the relay module expects a pin to be LOW to activate the relay,
+	// we have to invert the number we write to the shift registers
+	sendbits(oneofeight(preferredant(band,2)) ^ B11111111,
+			 oneofeight(preferredant(band,1)) ^ B11111111);
 			
 //} else { 
 //#ifdef DEBUG
@@ -243,7 +245,7 @@ int oneofeight (int number) {
 }
 
 // Find the first occurrence of the specified preference in the 
-// preferred antenna table
+// band to antenna mapping table
 int preferredant(int band, int preference) {
 	for (int i=0;i<8;i++) {
 		if ( bandtoant[band][i] == preference) {
