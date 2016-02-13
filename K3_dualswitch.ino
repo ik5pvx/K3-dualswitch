@@ -171,26 +171,27 @@ void loop() {
 //			}
 	if (band > 10) { // there are currently only 11 HF bands on the K3
 #ifdef DEBUG
-		Serial.println("UNDEFINED BAND!");
+		Serial.print(band,BIN);
+		Serial.println(" UNDEFINED BAND!");
 #endif
 		band = 0;
 	}
 				
 #ifdef DEBUG
-	Serial.print(band);
+	Serial.print(band,BIN);
 	Serial.print(" -> ");
 	Serial.println(hfbandname[band]);
 	Serial.print("Pref. ant: ");
 	Serial.println(preferredant(band,2));
 	Serial.print("One of Eight code: ");
 	Serial.println(oneofeight(preferredant(band,2)));
-	Serial.print("Resulting antenna: ");
+	Serial.print("Resulting master antenna: ");
 	Serial.println(antennaname[(preferredant(band,2))]);
 	Serial.print("Alt. ant: ");
 	Serial.println(preferredant(band,1));
 	Serial.print("One of Eight code: ");
 	Serial.println(oneofeight(preferredant(band,1)));
-	Serial.print("Resulting antenna: ");
+	Serial.print("Resulting slave antenna: ");
 	Serial.println(antennaname[(preferredant(band,1))]);
 #endif
 	sendbits(oneofeight(preferredant(band,2)),
