@@ -50,6 +50,16 @@
 
    NOTE: antenna ports on the switch are numbered 1 to 8. 
 
+   Circuit design notes
+
+   Jack Brindle W6FB recommends protecting the circuit by using pullups
+   on the Arduino digital inputs (either internal or external) and diodes
+   with Cathode facing the K3. This will prevent powering the Arduino board
+   from the K3 +5V. The K3 will act as drain, pulling down the voltage on
+   the Arduino pins. Recommends low voltage drop diodes (schottky, 
+   e.g. 1N5711 - the KPA500 uses BAT54 which are SMD only, a suitable 
+   equivalent is BAT42 which is also available in though-hole package). 
+
 */
 
 /************** USER CONFIGURABLE PART ***********/  
