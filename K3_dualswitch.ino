@@ -66,6 +66,11 @@
    e.g. 1N5711 - the KPA500 uses BAT54 which are SMD only, a suitable 
    equivalent is BAT42 which is also available in though-hole package). 
 
+   Required libraries
+   
+   The interrupt handling is done via EnableInterrupts. See 
+   https://github.com/GreyGnome/EnableInterrupt
+
    Thank you
 
    The following people contributed guidance, suggestions, ideas, critique:
@@ -129,6 +134,9 @@ uint8_t bandtoant[11][8] = {
 
 /************** END USER CONFIGURABLE PART *******/
 
+#include <EnableInterrupt.h>
+
+
 #ifdef DEBUG
 // consider defining serial.print macros here
 #endif
@@ -160,6 +168,13 @@ const int masternextpin = A1;
 const int slaveautopin = A2;
 const int slavenextpin = A3;
 
+volatile bool masterauto = true;
+volatile bool masternext = false;
+volatile bool slaveauto = true;
+volatile bool slavenext = false;
+
+const int masterautoled = 7;
+const int slaveautoled = 8;
 
 void setup() {
 	// configure pins, zero all the registers so all relays are open.
@@ -178,6 +193,8 @@ void setup() {
 	pinMode(masternextpin, INPUT);
 	pinMode(slaveautopin, INPUT);
 	pinMode(slavenextpin, INPUT);
+	pinMode(masterautoled, OUTPUT);
+	pinMode(slaveautoled, OUTPUT);
 	// start a serial monitor to help debugging
 #ifdef DEBUG
 	Serial.begin(9600);
@@ -239,11 +256,18 @@ void loop() {
 //		}
 //	}
 
+	digitalWrite(masterautoled,masterauto);
+	digitalWrite(slaveautoled,slaveauto);
+
 #ifdef DEBUG
+	Serial.print("Master Auto: ");
+	Serial.print(masterauto);
+	Serial.print(" Slave Auto: ");
+	Serial.println(slaveauto);
 	delay(1000);
 #endif
 
-}
+} /******* End of main loop *******/
 
 // Write the data to the shift registers
 void sendbits (byte master, byte slave) {
