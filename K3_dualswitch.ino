@@ -162,11 +162,11 @@ const int band1pin = 3;
 const int band2pin = 4;
 const int band3pin = 5;
 
-// The 4 pushbuttons
+// The 4 pushbuttons. Using contiguous analog inputs leads to interference
 const int masterautopin = A0;
-const int masternextpin = A1;
-const int slaveautopin = A2;
-const int slavenextpin = A3;
+const int masternextpin = A2;
+const int slaveautopin = A4;
+const int slavenextpin = 6;
 
 volatile bool masterauto = true;
 volatile bool masternext = false;
@@ -329,7 +329,11 @@ int readband() {
 
 // Interrupt functions
 void masterautointerrupt () {
-	masterauto != masterauto;
+	masterauto = !masterauto;
+// not a good idea
+//#ifdef DEBUG
+//	Serial.println("master auto interrupt");
+//#endif
 }
 
 void masternextinterrupt () {
@@ -338,7 +342,7 @@ void masternextinterrupt () {
 }
 
 void slaveautointerrupt () {
-	slaveauto != slaveauto;
+	slaveauto = !slaveauto;
 }
 
 void slavenextinterrupt () {
