@@ -66,10 +66,6 @@
 
 #define DEBUG
 
-#ifdef DEBUG
-// consider defining serial.print macros here
-#endif
-
 // should I decide to put an lcd on this thing
 // give a name to each antenna port. keep it short.
 char* antennaname[] = {
@@ -119,6 +115,9 @@ uint8_t bandtoant[11][8] = {
 
 /*************************************************/
 
+#ifdef DEBUG
+// consider defining serial.print macros here
+#endif
 
 
 /* Hardware setup */
@@ -141,20 +140,30 @@ const int band1pin = 3;
 const int band2pin = 4;
 const int band3pin = 5;
 
+// The 4 pushbuttons
+const int masterautopin = 6;
+const int masternextpin = 7;
+const int slaveautopin = 8;
+const int slavenextpin = 9;
+
 
 void setup() {
 	// configure pins, zero all the registers so all relays are open.
 	pinMode(latchpin, OUTPUT);
 	pinMode(clockpin, OUTPUT);
 	pinMode(datapin, OUTPUT);
-	pinMode(band0pin, INPUT);
-	pinMode(band1pin, INPUT);
-	pinMode(band2pin, INPUT);
-	pinMode(band3pin, INPUT);
 	digitalWrite(latchpin, LOW);
 	shiftOut(datapin, clockpin, MSBFIRST, 0);  
 	shiftOut(datapin, clockpin, MSBFIRST, 0);  
 	digitalWrite(latchpin, HIGH);
+	pinMode(band0pin, INPUT);
+	pinMode(band1pin, INPUT);
+	pinMode(band2pin, INPUT);
+	pinMode(band3pin, INPUT);
+	pinMode(masterautopin, INPUT);
+	pinMode(masternextpin, INPUT);
+	pinMode(slaveautopin, INPUT);
+	pinMode(slavenextpin, INPUT);
 	// start a serial monitor to help debugging
 #ifdef DEBUG
 	Serial.begin(9600);
