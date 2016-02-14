@@ -172,6 +172,8 @@ volatile bool masterauto = true;
 volatile bool masternext = false;
 volatile bool slaveauto = true;
 volatile bool slavenext = false;
+volatile int masterant = 0;
+volatile int slaveant = 0;
 
 const int masterautoled = 7;
 const int slaveautoled = 8;
@@ -195,6 +197,11 @@ void setup() {
 	pinMode(slavenextpin, INPUT);
 	pinMode(masterautoled, OUTPUT);
 	pinMode(slaveautoled, OUTPUT);
+	// enable interrupts on the button pins
+	enableInterrupt(masterautopin,masterautointerrupt,RISING);
+	enableInterrupt(masternextpin,masternextinterrupt,RISING);
+	enableInterrupt(slaveautopin,slaveautointerrupt,RISING);
+	enableInterrupt(slavenextpin,slavenextinterrupt,RISING);
 	// start a serial monitor to help debugging
 #ifdef DEBUG
 	Serial.begin(9600);
@@ -260,10 +267,14 @@ void loop() {
 	digitalWrite(slaveautoled,slaveauto);
 
 #ifdef DEBUG
-	Serial.print("Master Auto: ");
+	Serial.print("*** Master Auto: ");
 	Serial.print(masterauto);
+	Serial.print(" Master Ant: ");
+	Serial.print(masterant);
 	Serial.print(" Slave Auto: ");
-	Serial.println(slaveauto);
+	Serial.print(slaveauto);
+	Serial.print(" Slave Ant: ");
+	Serial.println(slaveant);
 	delay(1000);
 #endif
 
@@ -314,5 +325,24 @@ int readband() {
 	band3 = digitalRead(band3pin);
 	
 	return (band3 << 3) + (band2 << 2) + (band1 << 1) + band0;
+}
+
+// Interrupt functions
+void masterautointerrupt () {
+	masterauto != masterauto;
+}
+
+void masternextinterrupt () {
+	masterant++;
+	masterant %= 8;
+}
+
+void slaveautointerrupt () {
+	slaveauto != slaveauto;
+}
+
+void slavenextinterrupt () {
+	slaveant++;
+	slaveant %=8;
 }
 
