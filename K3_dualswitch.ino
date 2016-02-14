@@ -134,8 +134,8 @@ uint8_t bandtoant[11][8] = {
 
 /************** END USER CONFIGURABLE PART *******/
 
+#define EI_ARDUINO_INTERRUPTED_PIN
 #include <EnableInterrupt.h>
-
 
 #ifdef DEBUG
 // consider defining serial.print macros here
@@ -198,10 +198,10 @@ void setup() {
 	pinMode(masterautoled, OUTPUT);
 	pinMode(slaveautoled, OUTPUT);
 	// enable interrupts on the button pins
-	enableInterrupt(masterautopin,masterautointerrupt,RISING);
-	enableInterrupt(masternextpin,masternextinterrupt,RISING);
-	enableInterrupt(slaveautopin,slaveautointerrupt,RISING);
-	enableInterrupt(slavenextpin,slavenextinterrupt,RISING);
+	enableInterrupt(masterautopin,buttoninterrupt,RISING);
+	enableInterrupt(masternextpin,buttoninterrupt,RISING);
+	enableInterrupt(slaveautopin,buttoninterrupt,RISING);
+	enableInterrupt(slavenextpin,buttoninterrupt,RISING);
 	// start a serial monitor to help debugging
 #ifdef DEBUG
 	Serial.begin(9600);
@@ -327,26 +327,23 @@ int readband() {
 	return (band3 << 3) + (band2 << 2) + (band1 << 1) + band0;
 }
 
-// Interrupt functions
-void masterautointerrupt () {
-	masterauto = !masterauto;
-// not a good idea
-//#ifdef DEBUG
-//	Serial.println("master auto interrupt");
-//#endif
-}
-
-void masternextinterrupt () {
-	masterant++;
-	masterant %= 8;
-}
-
-void slaveautointerrupt () {
-	slaveauto = !slaveauto;
-}
-
-void slavenextinterrupt () {
-	slaveant++;
-	slaveant %=8;
+// Interrupt function
+void buttoninterrupt () {
+	switch (arduinoInterruptedPin) {
+	case masterautopin:
+		masterauto = !masterauto;
+		break;
+	case masternextpin:
+		masterant++;
+		masterant %= 8;
+		break;
+	case slaveautopin:
+		slaveauto = !slaveauto;
+		break;
+	case slavenextpin:
+		slaveant++;
+		slaveant %=8;
+		break;
+	}
 }
 
