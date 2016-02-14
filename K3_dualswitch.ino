@@ -178,6 +178,9 @@ volatile int slaveant = 0;
 const int masterautoled = 7;
 const int slaveautoled = 8;
 
+unsigned long lastinterrupttime = 0;
+
+
 void setup() {
 	// configure pins, zero all the registers so all relays are open.
 	pinMode(latchpin, OUTPUT);
@@ -329,21 +332,28 @@ int readband() {
 
 // Interrupt function
 void buttoninterrupt () {
-	switch (arduinoInterruptedPin) {
-	case masterautopin:
-		masterauto = !masterauto;
-		break;
-	case masternextpin:
-		masterant++;
-		masterant %= 8;
-		break;
-	case slaveautopin:
-		slaveauto = !slaveauto;
-		break;
-	case slavenextpin:
-		slaveant++;
-		slaveant %=8;
-		break;
+	unsigned long interrupttime = millis();
+
+	if ( interrupttime - lastinterrupttime > 200 ) {
+		switch (arduinoInterruptedPin) {
+		case masterautopin:
+			masterauto = !masterauto;
+			break;
+		case masternextpin:
+			masterant++;
+			masterant %= 8;
+			break;
+		case slaveautopin:
+			slaveauto = !slaveauto;
+			break;
+		case slavenextpin:
+			slaveant++;
+			slaveant %=8;
+			break;
+		}
 	}
+	lastinterrupttime = interrupttime;
+//	delayMicroseconds(200000);
+//	sei();
 }
 
