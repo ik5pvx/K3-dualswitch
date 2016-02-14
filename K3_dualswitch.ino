@@ -50,6 +50,12 @@
 
    NOTE: antenna ports on the switch are numbered 1 to 8. 
 
+   4 pushbuttons to control operations: 2 Auto/Manual selection buttons 
+   (one for master, one for slave), 2 "next" buttons to cycle through 
+   available antennas. Pressing next while in auto mode selects next 
+   antenna among those suitable for that band. Pressing next while in manual
+   just cycles through all antenna positions. 
+
    Circuit design notes
 
    Jack Brindle W6FB recommends protecting the circuit by using pullups
@@ -60,14 +66,22 @@
    e.g. 1N5711 - the KPA500 uses BAT54 which are SMD only, a suitable 
    equivalent is BAT42 which is also available in though-hole package). 
 
+   Thank you
+
+   The following people contributed guidance, suggestions, ideas, critique:
+   Lorenzo IZ1YSL, Jack W6FB, Bill AE6JV, Dick K6KR, Brian K3KO, Larry K8UT.
+
+
 */
 
 /************** USER CONFIGURABLE PART ***********/  
 
+// Uncomment to start a serial monitor and see some chatter on it.
 #define DEBUG
 
-// should I decide to put an lcd on this thing
-// give a name to each antenna port. keep it short.
+// Give a name to each antenna port (keep it short!)
+// should I decide to put an lcd on this thing.
+// Also used for debug
 char* antennaname[] = {
 	"***NONE***",// ant 0 doesn't exist, switch counts from 1
 	"Yagi 6m",   // ant 1
@@ -113,7 +127,7 @@ uint8_t bandtoant[11][8] = {
 };
 
 
-/*************************************************/
+/************** END USER CONFIGURABLE PART *******/
 
 #ifdef DEBUG
 // consider defining serial.print macros here
@@ -141,10 +155,10 @@ const int band2pin = 4;
 const int band3pin = 5;
 
 // The 4 pushbuttons
-const int masterautopin = 6;
-const int masternextpin = 7;
-const int slaveautopin = 8;
-const int slavenextpin = 9;
+const int masterautopin = A0;
+const int masternextpin = A1;
+const int slaveautopin = A2;
+const int slavenextpin = A3;
 
 
 void setup() {
