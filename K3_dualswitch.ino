@@ -84,6 +84,9 @@
 // Uncomment to start a serial monitor and see some chatter on it.
 #define DEBUG
 
+// Comment if the relay board doesn't need the inverted logic
+#define RelayUseInvertedLogic
+
 // Give a name to each antenna port (keep it short!)
 // should I decide to put an lcd on this thing.
 // Also used for debug
@@ -141,6 +144,11 @@ uint8_t bandtoant[11][8] = {
 // consider defining serial.print macros here
 #endif
 
+#ifdef RelayUseInvertedLogic
+#define INVERTLOGIC B11111111
+#else
+#define INVERTLOGIC B00000000
+#endif
 
 /* Hardware setup */
 
@@ -187,8 +195,8 @@ void setup() {
 	pinMode(clockpin, OUTPUT);
 	pinMode(datapin, OUTPUT);
 	digitalWrite(latchpin, LOW);
-	shiftOut(datapin, clockpin, MSBFIRST, 0);  
-	shiftOut(datapin, clockpin, MSBFIRST, 0);  
+	shiftOut(datapin, clockpin, MSBFIRST, 0 ^ INVERTLOGIC);  
+	shiftOut(datapin, clockpin, MSBFIRST, 0 ^ INVERTLOGIC);  
 	digitalWrite(latchpin, HIGH);
 	pinMode(band0pin, INPUT);
 	pinMode(band1pin, INPUT);
@@ -256,8 +264,8 @@ void loop() {
 #endif
 	// Since the relay module expects a pin to be LOW to activate the relay,
 	// we have to invert the number we write to the shift registers
-	sendbits(oneofeight(preferredant(band,2)) ^ B11111111,
-			 oneofeight(preferredant(band,1)) ^ B11111111);
+	sendbits(oneofeight(preferredant(band,2)) ^ INVERTLOGIC,
+			 oneofeight(preferredant(band,1)) ^ INVERTLOGIC);
 			
 //} else { 
 //#ifdef DEBUG
