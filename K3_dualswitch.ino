@@ -74,7 +74,8 @@
    Thank you
 
    The following people contributed guidance, suggestions, ideas, critique:
-   Lorenzo IZ1YSL, Jack W6FB, Bill AE6JV, Dick K6KR, Brian K3KO, Larry K8UT.
+   Lorenzo IZ1YSL, Jack W6FB, Bill AE6JV, Dick K6KR, Brian K3KO, Larry K8UT,
+   Josh W6XU
 
 
 */
@@ -94,10 +95,10 @@ char* antennaname[] = {
 	"***NONE***",// ant 0 doesn't exist, switch counts from 1
 	"Yagi 6m",   // ant 1
 	"Vert 6m",   // ant 2
-	"",          // ant 3
-	"",          // ant 4
-	"",          // ant 5
-	"",          // ant 6
+	"dummy3",          // ant 3
+	"dummy4",          // ant 4
+	"dummy5",          // ant 5
+	"dummy6",          // ant 6
 	"autotuner", // ant 7
 	"dipolo"     // ant 8
 };
@@ -188,6 +189,8 @@ const int slaveautoled = 8;
 
 unsigned long lastinterrupttime = 0;
 
+int band = 0;
+int oldband = 0;
 
 void setup() {
 	// configure pins, zero all the registers so all relays are open.
@@ -221,51 +224,69 @@ void setup() {
 }
 
 void loop() {
-//	// Let's read a character from the serial and pretend it's our band data.
-//	if (Serial.available() > 0) {
-//		int band = Serial.read();
-//		if (isHexadecimalDigit(band)) {
-	int band = readband();
+	band = readband();
+
+
+
 #ifdef DEBUG
+	Serial.println("-----------------");
 	Serial.print("Selecting antenna for band ");
 #endif
-//			// conversion from ascii hex digit to number, taking care of case
-//			band -= '0'; 
-//			if (band > 9 ) { 
-//				band -= 7;
-//				if (band > 16) {
-//					band -= 32;
-//				}
-//			}
+
 	if (band > 10) { // there are currently only 11 HF bands on the K3
 #ifdef DEBUG
 		Serial.print(band,BIN);
-		Serial.println(" UNDEFINED BAND!");
+		Serial.print(" UNDEFINED BAND! resetting to ");
 #endif
 		band = 0;
 	}
-				
+	
 #ifdef DEBUG
 	Serial.print(band,BIN);
 	Serial.print(" -> ");
-	Serial.println(hfbandname[band]);
-	Serial.print("Pref. ant: ");
-	Serial.println(preferredant(band,2));
-	Serial.print("One of Eight code: ");
-	Serial.println(oneofeight(preferredant(band,2)));
-	Serial.print("Resulting master antenna: ");
+	Serial.print(hfbandname[band]);
+	Serial.print("\t old band was: ");
+	Serial.print(oldband,BIN);
+	Serial.print(" -> ");
+	Serial.println(hfbandname[oldband]);
+	Serial.print("Preferred antenna: ");
+	Serial.print(preferredant(band,2));
+	Serial.print("\tOne of Eight code: ");
+	Serial.print(oneofeight(preferredant(band,2)));
+	Serial.print("\tResulting master antenna if auto mode: ");
 	Serial.println(antennaname[(preferredant(band,2))]);
-	Serial.print("Alt. ant: ");
-	Serial.println(preferredant(band,1));
-	Serial.print("One of Eight code: ");
-	Serial.println(oneofeight(preferredant(band,1)));
-	Serial.print("Resulting slave antenna: ");
+	Serial.print("Alternate antenna: ");
+	Serial.print(preferredant(band,1));
+	Serial.print("\tOne of Eight code: ");
+	Serial.print(oneofeight(preferredant(band,1)));
+	Serial.print("\tResulting slave antenna if auto mode: ");
 	Serial.println(antennaname[(preferredant(band,1))]);
 #endif
+
+	// check if the radio has changed band
+	if ( band != oldband ) {
+		// if auto mode, select the first available ant
+		if (masterauto) {
+			masterant = preferredant(band,2);
+		} else {
+			// do not change antenna if we are not in auto mode
+		}
+		
+		// repeat for slave ant
+		// if auto mode, select the first available ant
+		if (slaveauto) {
+			slaveant = preferredant(band,1);
+		} else {
+			// do not change antenna if we are not in auto mode
+		}
+		
+	}
+
+
 	// Since the relay module expects a pin to be LOW to activate the relay,
 	// we have to invert the number we write to the shift registers
-	sendbits(oneofeight(preferredant(band,2)) ^ INVERTLOGIC,
-			 oneofeight(preferredant(band,1)) ^ INVERTLOGIC);
+	sendbits(oneofeight(masterant) ^ INVERTLOGIC,
+			 oneofeight(slaveant) ^ INVERTLOGIC);
 			
 //} else { 
 //#ifdef DEBUG
@@ -286,8 +307,22 @@ void loop() {
 	Serial.print(slaveauto);
 	Serial.print(" Slave Ant: ");
 	Serial.println(slaveant);
+	Serial.print("Actually selected master antenna: ");
+	Serial.print(masterant);
+	Serial.print("\tOne of Eight code: ");
+	Serial.print(oneofeight(masterant));
+	Serial.print("\tResulting master antenna: ");
+	Serial.println(antennaname[masterant]);
+	Serial.print("Actually selected slave antenna: ");
+	Serial.print(slaveant);
+	Serial.print("\tOne of Eight code: ");
+	Serial.print(oneofeight(slaveant));
+	Serial.print("\tResulting slave antenna: ");
+	Serial.println(antennaname[slaveant]);
 	delay(1000);
 #endif
+
+	oldband = band;
 
 } /******* End of main loop *******/
 
@@ -361,7 +396,5 @@ void buttoninterrupt () {
 		}
 	}
 	lastinterrupttime = interrupttime;
-//	delayMicroseconds(200000);
-//	sei();
 }
 
