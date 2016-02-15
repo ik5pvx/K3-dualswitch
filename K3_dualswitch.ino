@@ -221,6 +221,7 @@ void setup() {
 	Serial.begin(9600);
 	Serial.println("Initialization complete");
 #endif
+	noTone(9); // clear the piezo pin
 }
 
 void loop() {
@@ -383,18 +384,33 @@ void buttoninterrupt () {
 			masterauto = !masterauto;
 			break;
 		case masternextpin:
-			masterant++;
-			masterant %= 9; // use 9 because antenna 0 means nothing selected
+			if (masterauto) {
+				// what to do if we are in auto mode?
+				beep();
+			} else {
+				// in manual mode, cycle through all antennas
+				masterant++;
+				masterant %= 9; // antennas are 0 + 1 to 8
+			}
 			break;
 		case slaveautopin:
 			slaveauto = !slaveauto;
 			break;
 		case slavenextpin:
-			slaveant++;
-			slaveant %=9; // use 9 because antenna 0 means nothing selected
+			if (slaveauto) {
+				// what to do if we are in auto mode?
+				beep();
+			} else {
+				// in manual mode, cycle through all antennas
+				slaveant++;
+				slaveant %=9; // antennas are 0 + 1 to 8
+			}
 			break;
 		}
 	}
 	lastinterrupttime = interrupttime;
 }
 
+void beep() {
+	tone(9,880,100);
+}
