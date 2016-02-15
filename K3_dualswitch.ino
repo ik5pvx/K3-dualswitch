@@ -319,7 +319,7 @@ void loop() {
 	Serial.print(oneofeight(slaveant));
 	Serial.print("\tResulting slave antenna: ");
 	Serial.println(antennaname[slaveant]);
-	delay(1000);
+	delay(2000);
 #endif
 
 	oldband = band;
@@ -384,14 +384,14 @@ void buttoninterrupt () {
 			break;
 		case masternextpin:
 			masterant++;
-			masterant %= 8;
+			masterant %= 9; // use 9 because antenna 0 means nothing selected
 			break;
 		case slaveautopin:
 			slaveauto = !slaveauto;
 			break;
 		case slavenextpin:
 			slaveant++;
-			slaveant %=8;
+			slaveant %=9; // use 9 because antenna 0 means nothing selected
 			break;
 		}
 	}
