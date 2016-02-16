@@ -1,11 +1,11 @@
 
 * Work on conflict logic
-* Add manual/auto operation
-* Buttons to cycle through available antennas
+* Add manual/auto operation (done)
+* Buttons to cycle through available antennas (manual case done)
 * Actually read real band data lines
 * Save antenna mapping to eeprom instead of having to recompile
 * LCD ?
-* Use the relay module instead of the leds
+* Use the relay module instead of the leds (one module tested).
 * Assert TX-Inhibit while switching or if bad antenna selected
 
 
