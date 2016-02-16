@@ -118,10 +118,15 @@ char* hfbandname[] = {
 	"  6 m",
 };
 
+// this corresponds to how many antenna positions the switch has
+#define ANTCOUNT 8
+// this corresponds to the number of different bands supported by the radio
+#define BANDCOUNT 11
+
 // for each possible band, 2 means it is the preferred antenna, 
 // 1 means the antenna can be used, 0 means antenna not usable.
 // NOTE: 60 m is band 0. 
-uint8_t bandtoant[11][8] = {
+uint8_t bandtoant[BANDCOUNT][ANTCOUNT] = {
 	// ant1, ant2, ant3, ant4, ant5, ant6, ant7, ant8
 	{ 0, 0, 0, 0, 0, 0, 0, 0 }, //  60 m
 	{ 0, 0, 0, 0, 0, 0, 0, 0 }, // 160 m
@@ -284,7 +289,10 @@ void loop() {
 		} else {
 			// do not change antenna if we are not in auto mode
 		}
-		
+	
+		oldband = band;
+
+
 	}
 
 
@@ -327,8 +335,6 @@ void loop() {
 	delay(2000);
 #endif
 
-	oldband = band;
-
 } /******* End of main loop *******/
 
 // Write the data to the shift registers
@@ -359,9 +365,9 @@ int oneofeight (int number) {
 // conversions here 
 int preferredant(int band, int preference,int currentant) {
 	if (currentant) currentant--;
-	for (int i=0;i<8;i++) {
-		if ( bandtoant[band][(i+currentant) % 8] == preference) {
-			return (i+currentant) % 8 + 1;
+	for (int i=0;i<ANTCOUNT;i++) {
+		if ( bandtoant[band][(i+currentant) % ANTCOUNT] == preference) {
+			return (i+currentant) % ANTCOUNT + 1;
 		}
 	}
 	return 0;
@@ -389,6 +395,8 @@ void buttoninterrupt () {
 		switch (arduinoInterruptedPin) {
 		case masterautopin:
 			masterauto = !masterauto;
+			// if we switch back to auto, trigger the auto process again
+			if (masterauto) oldband = oldband++ % BANDCOUNT; 
 			break;
 		case masternextpin:
 			if (masterauto) {
@@ -397,11 +405,13 @@ void buttoninterrupt () {
 			} else {
 				// in manual mode, cycle through all antennas
 				masterant++;
-				masterant %= 9; // antennas are 0 + 1 to 8
+				masterant %= (ANTCOUNT+1); // antennas are 0 + 1 to 8
 			}
 			break;
 		case slaveautopin:
 			slaveauto = !slaveauto;
+			// if we switch back to auto, trigger the auto process again
+			if (slaveauto) oldband = oldband++ % BANDCOUNT; 
 			break;
 		case slavenextpin:
 			if (slaveauto) {
@@ -410,7 +420,7 @@ void buttoninterrupt () {
 			} else {
 				// in manual mode, cycle through all antennas
 				slaveant++;
-				slaveant %=9; // antennas are 0 + 1 to 8
+				slaveant %= (ANTCOUNT+1); // antennas are 0 + 1 to 8
 			}
 			break;
 		}
