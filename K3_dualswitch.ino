@@ -91,6 +91,7 @@
 // Give a name to each antenna port (keep it short!)
 // should I decide to put an lcd on this thing.
 // Also used for debug
+// Note that this array has 9 entries, actual antennas are 1 to 8
 char* antennaname[] = {
 	"***NONE***",// ant 0 doesn't exist, switch counts from 1
 	"Yagi 6m",   // ant 1
@@ -181,6 +182,7 @@ volatile bool masterauto = true;
 volatile bool masternext = false;
 volatile bool slaveauto = true;
 volatile bool slavenext = false;
+// antenna indexes count from 0 to 8 (actual antennas are 1 to 8)
 volatile int masterant = 0;
 volatile int slaveant = 0;
 
@@ -251,24 +253,25 @@ void loop() {
 	Serial.print(" -> ");
 	Serial.println(hfbandname[oldband]);
 	Serial.print("Preferred antenna: ");
-	Serial.print(preferredant(band,2));
+	Serial.print(preferredant(band,2,0)); // search from 0 to find the first
 	Serial.print("\tOne of Eight code: ");
-	Serial.print(oneofeight(preferredant(band,2)));
+	Serial.print(oneofeight(preferredant(band,2,0)));
 	Serial.print("\tResulting master antenna if auto mode: ");
-	Serial.println(antennaname[(preferredant(band,2))]);
+	Serial.println(antennaname[(preferredant(band,2,0))]);
 	Serial.print("Alternate antenna: ");
-	Serial.print(preferredant(band,1));
+	Serial.print(preferredant(band,1,0));
 	Serial.print("\tOne of Eight code: ");
-	Serial.print(oneofeight(preferredant(band,1)));
+	Serial.print(oneofeight(preferredant(band,1,0)));
 	Serial.print("\tResulting slave antenna if auto mode: ");
-	Serial.println(antennaname[(preferredant(band,1))]);
+	Serial.println(antennaname[(preferredant(band,1,0))]);
 #endif
 
 	// check if the radio has changed band
 	if ( band != oldband ) {
 		// if auto mode, select the first available ant
 		if (masterauto) {
-			masterant = preferredant(band,2);
+			// we start the search from the currently selected antenna
+			masterant = preferredant(band,2,masterant); 
 		} else {
 			// do not change antenna if we are not in auto mode
 		}
@@ -276,7 +279,8 @@ void loop() {
 		// repeat for slave ant
 		// if auto mode, select the first available ant
 		if (slaveauto) {
-			slaveant = preferredant(band,1);
+			// we start the search from the currently selected antenna
+			slaveant = preferredant(band,1,slaveant);
 		} else {
 			// do not change antenna if we are not in auto mode
 		}
@@ -350,11 +354,14 @@ int oneofeight (int number) {
 }
 
 // Find the first occurrence of the specified preference in the 
-// band to antenna mapping table
-int preferredant(int band, int preference) {
+// band to antenna mapping table, searching from the current one onwards
+// the bandtoant array counts antennas from 0 to 7, need to apply appropriate
+// conversions here 
+int preferredant(int band, int preference,int currentant) {
+	if (currentant) currentant--;
 	for (int i=0;i<8;i++) {
-		if ( bandtoant[band][i] == preference) {
-			return i+1;
+		if ( bandtoant[band][(i+currentant) % 8] == preference) {
+			return (i+currentant) % 8 + 1;
 		}
 	}
 	return 0;
