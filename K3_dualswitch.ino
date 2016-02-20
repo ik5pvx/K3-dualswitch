@@ -378,7 +378,6 @@ int preferredant(int band, int preference,int currentant) {
 // the bandtoant array counts antennas from 0 to 7, need to apply appropriate
 // conversions here 
 int nextant(int band, int currentant) {
-	if (currentant) currentant--;
 	for (int i=0;i<ANTCOUNT;i++) {
 		if ( bandtoant[band][(i+currentant) % ANTCOUNT] ) {
 			return (i+currentant) % ANTCOUNT + 1;
@@ -414,8 +413,9 @@ void buttoninterrupt () {
 			break;
 		case masternextpin:
 			if (masterauto) {
-				// what to do if we are in auto mode?
-				beep();
+				// in auto mode, cycle only through antennas valid for this band
+				masterant = nextant(band,masterant);
+				// beep();
 			} else {
 				// in manual mode, cycle through all antennas
 				masterant++;
@@ -429,8 +429,8 @@ void buttoninterrupt () {
 			break;
 		case slavenextpin:
 			if (slaveauto) {
-				// what to do if we are in auto mode?
-				beep();
+				// in auto mode, cycle only through antennas valid for this band
+				slaveant = nextant(band,slaveant);
 			} else {
 				// in manual mode, cycle through all antennas
 				slaveant++;
