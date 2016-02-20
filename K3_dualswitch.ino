@@ -373,6 +373,20 @@ int preferredant(int band, int preference,int currentant) {
 	return 0;
 }
 
+// Find the next available antenna in the 
+// band to antenna mapping table, searching from the current one onwards
+// the bandtoant array counts antennas from 0 to 7, need to apply appropriate
+// conversions here 
+int nextant(int band, int currentant) {
+	if (currentant) currentant--;
+	for (int i=0;i<ANTCOUNT;i++) {
+		if ( bandtoant[band][(i+currentant) % ANTCOUNT] ) {
+			return (i+currentant) % ANTCOUNT + 1;
+		}
+	}
+	return 0;
+}
+
 // Read the band lines and merge them in a binary digit.
 int readband() {
 	int band0;
