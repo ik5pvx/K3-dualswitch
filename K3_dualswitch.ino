@@ -478,6 +478,13 @@ void checkconflict() {
 #ifdef DEBUG
 		Serial.println(" ***CONFLICT!***");
 #endif
+		if (slaveauto) {
+		} else {
+			// in manual mode, cycle through all antennas
+			slaveant++;
+			slaveant %= (ANTCOUNT+1); // antennas are 0 + 1 to 8
+			beep();
+		}
 	} else {
 		// nothing to do
 #ifdef DEBUG
