@@ -313,7 +313,8 @@ void loop() {
 
 	}
 
-
+	checkconflict();
+	
 	// Since the relay module expects a pin to be LOW to activate the relay,
 	// we have to invert the number we write to the shift registers
 	sendbits(oneofeight(masterant) ^ INVERTLOGIC,
@@ -462,4 +463,26 @@ void buttoninterrupt () {
 
 void beep() {
 	tone(9,880,100);
+}
+
+void checkconflict() {
+#ifdef DEBUG
+	Serial.print("Checking for conflict.");
+	Serial.print("\tMaster Ant: ");
+	Serial.print(masterant);
+	Serial.print("\tSlave Ant: ");
+	Serial.print(slaveant);
+#endif	
+
+	if ( masterant == slaveant ) {
+#ifdef DEBUG
+		Serial.println(" ***CONFLICT!***");
+#endif
+	} else {
+		// nothing to do
+#ifdef DEBUG
+		Serial.println(" No Conflict");
+#endif
+	}
+
 }
