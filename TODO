@@ -1,7 +1,7 @@
 
 * Work on conflict logic
 * Add manual/auto operation (done)
-* Buttons to cycle through available antennas (manual case done)
+* Buttons to cycle through available antennas (done)
 * Actually read real band data lines
 * Save antenna mapping to eeprom instead of having to recompile
 * LCD ?

@@ -56,6 +56,24 @@
    antenna among those suitable for that band. Pressing next while in manual
    just cycles through all antenna positions. 
 
+   There should be only one antenna with priority 2 for each band, all the 
+   other usable antennas are priority 1. This should ensure that the preferred
+   antenna is always connected to the same antenna port on the K3, thus 
+   making good use of K3 remembering ATU settings and the like. 
+
+   Conflict resolution
+
+   Master has precedence. If you select the same antenna for both master
+   and slave, the remote switch will actually not select the slave and you'll
+   transmit into an open. 
+   Upon master antenna change (manual or auto), check if chosen antenna is 
+   the same as the currently selected slave, and if true advance slave to 
+   next available (if set for auto) or next antenna (if set to manual). If no 
+   suitable slave selection is possible, do not select any slave antenna.
+   Upon slave antenna change, check if chosen antenna is same as master. If 
+   true, advance slave to next available choice (auto) or next antenna 
+   (manual), or leave unselected if no choice available. 
+
    Circuit design notes
 
    Jack Brindle W6FB recommends protecting the circuit by using pullups
