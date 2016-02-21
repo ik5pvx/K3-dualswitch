@@ -465,6 +465,10 @@ void beep() {
 	tone(9,880,100);
 }
 
+void boop() {
+	tone(9,220,100);
+}
+
 void checkconflict() {
 #ifdef DEBUG
 	Serial.print("Checking for conflict.");
@@ -474,11 +478,20 @@ void checkconflict() {
 	Serial.print(slaveant);
 #endif	
 
-	if ( masterant == slaveant ) {
+	// exclude the case where both are zero. 
+	if ( (masterant == slaveant) && masterant ) {
 #ifdef DEBUG
 		Serial.println(" ***CONFLICT!***");
 #endif
 		if (slaveauto) {
+			// in auto mode, cycle only through antennas valid for this band
+			slaveant = nextant(band,slaveant);
+			beep();
+			// check if slaveant is still the same as masterant
+			if (slaveant == masterant) { 
+				slaveant = 0;
+				boop();
+			}
 		} else {
 			// in manual mode, cycle through all antennas
 			slaveant++;
