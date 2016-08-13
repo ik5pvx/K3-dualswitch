@@ -1,5 +1,5 @@
 
-* Work on conflict logic
+* Work on conflict logic (mostly done, need more testing)
 * Add manual/auto operation (done)
 * Buttons to cycle through available antennas (done)
 * Actually read real band data lines
@@ -7,5 +7,5 @@
 * LCD ?
 * Use the relay module instead of the leds (one module tested).
 * Assert TX-Inhibit while switching or if bad antenna selected
-
+* Check power budget.
 
